@@ -1,12 +1,11 @@
 package ru.netology.data;
 
 import lombok.SneakyThrows;
+import lombok.Value;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
-import ru.netology.mode.User;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,33 +24,17 @@ public class SQLHelper {
 
     @SneakyThrows
     public static void updateUsers(String login, String password) {
-        var dataSQL = "INSERT INTO users(login, password) VALUES (?, ?);";
+        var dataSQL = "INSERT INTO users(id, login, password) VALUES (UUID(), ?, ?);";
         try (var conn = getConnection()) {
             runner.update(conn, dataSQL, login, password);
         }
     }
 
     @SneakyThrows
-    public static long countUsers() {
-        var countSQL = "SELECT COUNT(*) FROM users;";
+    public static String getCode() {
+        var dataSQL = "SELECT code FROM auth_codes ORDER BY created DESC LIMIT 1;";
         try (var conn = getConnection()) {
-            return runner.query(conn, countSQL, new ScalarHandler<>());
-        }
-    }
-
-    @SneakyThrows
-    public static User getFirstUser() {
-        var usersSQL = "SELECT * FROM users;";
-        try (var conn = getConnection()) {
-            return runner.query(conn, usersSQL, new BeanHandler<>(User.class));
-        }
-    }
-
-    @SneakyThrows
-    public static List<User> getUsers() {
-        var usersSQL = "SELECT * FROM users;";
-        try (var conn = getConnection()) {
-            return runner.query(conn, usersSQL, new BeanListHandler<>(User.class));
+            return runner.query(conn, dataSQL, new ScalarHandler<>());
         }
     }
 
