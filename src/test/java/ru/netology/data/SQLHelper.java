@@ -38,4 +38,14 @@ public class SQLHelper {
         }
     }
 
+    @SneakyThrows
+    public static void clearTables() {
+        try (var conn = getConnection()) {
+            runner.execute(conn, "DELETE FROM auth_codes;");
+            runner.execute(conn, "DELETE FROM card_transactions;");
+            runner.execute(conn, "DELETE FROM cards;");
+            runner.execute(conn, "DELETE FROM users;");
+        }
+    }
+
 }

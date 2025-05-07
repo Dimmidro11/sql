@@ -30,6 +30,10 @@ public class DataHelper {
         return FAKER.internet().password();
     }
 
+    public static String generateRandomCode() {
+        return FAKER.code().ean8();
+    }
+
     public static AuthInfo getAuthInfo() {
         return new AuthInfo("vasya", "qwerty123");
     }

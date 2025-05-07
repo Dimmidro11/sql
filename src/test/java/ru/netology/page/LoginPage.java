@@ -17,18 +17,15 @@ public class LoginPage {
         loginField.shouldBe(visible);
     }
 
-    public VerificationPage validLogin(DataHelper.AuthInfo info) {
-        loginField.setValue(info.getLogin());
-        passwordField.setValue(info.getPassword());
-        loginButton.click();
+    public VerificationPage validLogin(DataHelper.AuthInfo authInfo) {
+        login(authInfo.getLogin(), authInfo.getPassword());
         return new VerificationPage();
     }
 
-    public void invalidLogin() {
-        loginField.setValue(DataHelper.generateRandomLogin());
-        passwordField.setValue(DataHelper.generateRandomPassword());
+    public void login(String login, String password) {
+        loginField.setValue(login);
+        passwordField.setValue(password);
         loginButton.click();
-        notificationError.shouldBe(visible);
     }
 
     public void checkError(String expectedMessage) {

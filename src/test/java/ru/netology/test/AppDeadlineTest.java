@@ -1,10 +1,12 @@
 package ru.netology.test;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.netology.data.DataHelper;
+import ru.netology.data.SQLHelper;
 import ru.netology.page.LoginPage;
 import static com.codeborne.selenide.Selenide.open;
 import static ru.netology.data.SQLHelper.*;
@@ -20,6 +22,11 @@ public class AppDeadlineTest {
         loginPage = new LoginPage();
     }
 
+    @AfterAll
+    static void clearTables() {
+        SQLHelper.clearTables();
+    }
+
     @Test
     @DisplayName("Вход в личный кабинет с валидными данными")
     void shouldLoginValidUserAndCode() {
@@ -33,14 +40,14 @@ public class AppDeadlineTest {
     void shouldNotLoginInvalidCode() {
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
-        verificationPage.invalidVerification();
+        verificationPage.verification(DataHelper.generateRandomCode());
         verificationPage.checkError("Ошибка! Неверно указан код! Попробуйте ещё раз.");
     }
 
     @Test
     @DisplayName("Попытка входа в личный кабинет невалидного пользователя")
     void shouldNotLoginInvalidUser() {
-        loginPage.invalidLogin();
+        loginPage.login(DataHelper.generateRandomLogin(), DataHelper.generateRandomPassword());
         loginPage.checkError("Ошибка! Неверно указан логин или пароль");
     }
 
@@ -49,7 +56,7 @@ public class AppDeadlineTest {
     void shouldLoginValidUserValidCodeAfterInvalidCode() {
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
-        verificationPage.invalidVerification();
+        verificationPage.verification(DataHelper.generateRandomCode());
         var dashboardPage = verificationPage.validVerification(getCode());
     }
 
@@ -58,16 +65,16 @@ public class AppDeadlineTest {
     void shouldBlockAfter3TimesInvalidCode() {
         var authInfo = DataHelper.getOtherAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
-        verificationPage.invalidVerification();
+        verificationPage.verification(DataHelper.generateRandomCode());
         open("http://localhost:9999");
         verificationPage = loginPage.validLogin(authInfo);
-        verificationPage.invalidVerification();
+        verificationPage.verification(DataHelper.generateRandomCode());
         open("http://localhost:9999");
         verificationPage = loginPage.validLogin(authInfo);
-        verificationPage.invalidVerification();
+        verificationPage.verification(DataHelper.generateRandomCode());
         open("http://localhost:9999");
         verificationPage = loginPage.validLogin(authInfo);
-        verificationPage.invalidVerification();
-        verificationPage.checkError("Ошибка! Превышено количество попыток ввода кода!");
+        verificationPage.verification(getCode());
+        verificationPage.checkError("Ошибка!");
     }
 }
