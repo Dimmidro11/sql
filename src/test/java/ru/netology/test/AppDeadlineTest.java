@@ -1,10 +1,7 @@
 package ru.netology.test;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.netology.data.DataHelper;
 import ru.netology.data.SQLHelper;
 import ru.netology.page.LoginPage;
@@ -20,6 +17,11 @@ public class AppDeadlineTest {
     void setup() {
         open("http://localhost:9999");
         loginPage = new LoginPage();
+    }
+
+    @AfterEach
+    void clearAuthCodes() {
+        SQLHelper.clearCodes();
     }
 
     @AfterAll
@@ -75,6 +77,6 @@ public class AppDeadlineTest {
         open("http://localhost:9999");
         verificationPage = loginPage.validLogin(authInfo);
         verificationPage.verification(getCode());
-        verificationPage.checkError("Ошибка!");
+        verificationPage.checkError("Ошибка! Превышено количество попыток ввода кода!");
     }
 }

@@ -48,4 +48,10 @@ public class SQLHelper {
         }
     }
 
+    @SneakyThrows
+    public static void clearCodes() {
+        try (var conn = getConnection()) {
+            runner.execute(conn, "DELETE FROM auth_codes;");
+        }
+    }
 }
